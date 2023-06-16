@@ -70,31 +70,29 @@ app.post("/login/", async (request, response) => {
   }
 });
 
-app.get("/states/", async (request, response) => {
+app.get("/states/", logger, async (request, response) => {
   const getStatesQuery = `select * from state;`;
   const statesArray = await db.all(getStatesQuery);
-  statesArray.map((each) => {
+  let myArray = statesArray.map((each) => {
     return {
       stateId: each.state_id,
       stateName: each.state_name,
       population: each.population,
     };
   });
-  response.send(statesArray);
+  response.send(myArray);
 });
 
 app.get("/states/:stateId/", logger, async (request, response) => {
   const { stateId } = request.params;
   const getStateQuery = `select * from state where state_id='${stateId}';`;
-  const stateArray = await db.get(getStateQuery);
-  stateArray.map((each) => {
-    return {
-      stateId: each.state_id,
-      stateName: each.state_name,
-      population: each.population,
-    };
-  });
-  response.send(stateArray);
+  const each = await db.get(getStateQuery);
+  let myArray = {
+    stateId: each.state_id,
+    stateName: each.state_name,
+    population: each.population,
+  };
+  response.send(myArray);
 });
 
 app.post("/districts/", logger, async (request, response) => {
@@ -115,19 +113,17 @@ app.post("/districts/", logger, async (request, response) => {
 app.get("/districts/:districtId/", logger, async (request, response) => {
   const { districtId } = request.params;
   const getDistrictQuery = `select * from district where district_id='${districtId}';`;
-  const districtArray = await db.get(getDistrictQuery);
-  districtArray.map((each) => {
-    return {
-      districtId: each.district_id,
-      districtName: each.district_name,
-      stateId: each.state_id,
-      cases: each.cases,
-      cured: each.cured,
-      active: each.active,
-      deaths: each.deaths,
-    };
-  });
-  response.send(districtArray);
+  const each = await db.get(getDistrictQuery);
+  let myArray = {
+    districtId: each.district_id,
+    districtName: each.district_name,
+    stateId: each.state_id,
+    cases: each.cases,
+    cured: each.cured,
+    active: each.active,
+    deaths: each.deaths,
+  };
+  response.send(myArray);
 });
 
 app.delete("/districts/:districtId/", logger, async (request, response) => {
@@ -155,17 +151,14 @@ app.put("/districts/:districtId/", logger, async (request, response) => {
 app.get("/states/:stateId/stats/", logger, async (request, response) => {
   const { stateId } = request.params;
   const getStateQuery = `select sum(cases) as totalCases, sum(cured) as totalCured, sum(active) as totalActive, sum(deaths) as totalDeaths from state where state_id='${stateId}';`;
-  const stateArray = await db.get(getStateQuery);
-  stateArray.map((each) => {
-    return {
-      totalCases: each.totalCases,
-      totalCured: each.totalCured,
-      totalActive: each.totalActive,
-      totalDeaths: each.totalDeaths,
-    };
-  });
-  response.send(stateArray);
+  const each = await db.get(getStateQuery);
+  let myArray = {
+    totalCases: each.totalCases,
+    totalCured: each.totalCured,
+    totalActive: each.totalActive,
+    totalDeaths: each.totalDeaths,
+  };
+  response.send(myArray);
 });
 
 module.exports = app;
-
